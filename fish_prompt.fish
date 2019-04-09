@@ -54,6 +54,22 @@ function fish_prompt
     end
   end
 
-  echo -n -s $failed $arrow $time ' ' $cwd $git_info $normal ' '
+  # show number of bg jobs
+  if test (jobs -l | wc -l) -gt 0
+    set njobs $brightred(jobs -l | awk 'END{print $1}')' '$normal
+  end
+
+  # show from address if connected via ssh
+  if not set -q $SSH_CLIENT
+    set sshed $green(echo $SSH_CLIENT | awk '{print $1}')' '$normal
+  end
+
+  # show - sign in private mode
+  if not set -q $fish_private_mode
+    set private $cyan'- '$normal
+  end
+
+  echo -n -s $private $njobs $sshed $failed $arrow $time ' ' \
+             $cwd $git_info $normal ' '
 
 end
